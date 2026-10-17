@@ -1,5 +1,7 @@
 # Kacheen website
 
+Website: https://kacheen.lt/ · Repository: https://github.com/mbkacheen/mbkacheen.github.io
+
 Static Lithuanian portfolio for kacheen.lt. HTML, CSS and plain JavaScript: no build, package installation, paid builder or API key required.
 
 ## Files
@@ -37,7 +39,7 @@ For an in-browser submission flow later, connect a form provider and update the 
 4. Go to **Settings → Pages → Build and deployment → Deploy from a branch**. Choose **main** and **/(root)**, then Save.
 5. Open the URL GitHub supplies after deployment completes.
 
-There is no deployment or account setup already performed by this folder.
+This repository is published through GitHub Pages from `main` at `/(root)`. Commits to `main` automatically publish website updates. The configured custom domain is `kacheen.lt`.
 
 ## Connect kacheen.lt from Hostinger
 
@@ -53,7 +55,7 @@ At the domain's active DNS provider, configure the root domain using the GitHub 
 | A | @ | 185.199.111.153 |
 | CNAME | www | YOUR-USERNAME.github.io |
 
-Replace `YOUR-USERNAME` with the actual GitHub account name. Do not include the repository name in the `www` record. Check existing records before replacing conflicting website A/AAAA/CNAME records; preserve unrelated email MX/TXT records. No DNS changes have been made.
+Replace `YOUR-USERNAME` with the actual GitHub account name (`mbkacheen`). Do not include the repository name in the `www` record. The current Hostinger setup uses its existing `www` ALIAS record pointing to `mbkacheen.github.io` and the four apex A records above. The domain is verified with GitHub using its TXT challenge. Preserve unrelated email MX/TXT/DKIM records when updating website DNS.
 
 After GitHub verifies the DNS and provisions the certificate, enable **Enforce HTTPS**. DNS/certificate changes may take time. If you publish to a different domain, also update `CNAME`, `robots.txt`, `sitemap.xml` and the homepage sharing-image URL.
 
