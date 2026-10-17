@@ -1,7 +1,7 @@
 'use strict';
 
 // Everything works from a plain static directory. No service keys or build step.
-const contactEmail = 'mbkacheen@gmail.com';
+const contactEmail = 'info@kacheen.lt';
 
 document.querySelectorAll('[data-year]').forEach(element => {
   element.textContent = String(new Date().getFullYear());

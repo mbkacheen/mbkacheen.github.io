@@ -27,7 +27,7 @@ Visit http://127.0.0.1:4173/ . Online video/music playback needs an internet con
 
 ## Enquiries
 
-The destination is **mbkacheen@gmail.com**. The form creates a `mailto:` link and opens the visitor's email app. It does not send email itself, create a server-side submission, or store messages. The visitor must review and send the prepared message. A copy option appears in case their email app does not open; the direct email and Instagram links are also available.
+The destination is **info@kacheen.lt**. The form creates a `mailto:` link and opens the visitor's email app. It does not send email itself, create a server-side submission, or store messages. The visitor must review and send the prepared message. A copy option appears in case their email app does not open; the direct email and Instagram links are also available.
 
 For an in-browser submission flow later, connect a form provider and update the form text and privacy page accordingly. Never put Gmail credentials or private API keys in these files.
 
