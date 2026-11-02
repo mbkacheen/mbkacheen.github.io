@@ -40,3 +40,10 @@
 @media(max-width:560px){.hero-track{margin-left:0}.film-caption{flex-direction:row;align-items:center}.film-caption strong{font-size:20px}.film-caption>span:last-child{font-size:10px}}
 
 .film-caption{flex-direction:row;justify-content:flex-end;align-items:center}
+
+/* Keep each service detail link beside its own service. */
+.service-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:center;border-bottom:1px solid var(--line)}
+.service-item .service-row{border-bottom:0;min-width:0}
+.service-details{color:var(--violet-light);font-size:13px;white-space:nowrap;padding:14px 0}
+@media(max-width:700px){.service-item{grid-template-columns:1fr;gap:0}.service-item .service-row{padding-bottom:10px}.service-details{justify-self:start;margin-left:36px;padding:6px 0 26px;font-size:12px}}
+@media(max-width:560px){.service-details{margin-left:28px}}
