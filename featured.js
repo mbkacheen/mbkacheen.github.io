@@ -52,22 +52,37 @@
 ];
  const link=carousel.querySelector('.hero-film');
  const image=link.querySelector('img');
+ const frame=document.createElement('div');frame.className='featured-frame';image.before(frame);frame.append(image);
  const caption=link.querySelector('.film-caption span');
  const controls=carousel.querySelector('.featured-controls');
  const dots=carousel.querySelector('.featured-dots');
  const toggle=carousel.querySelector('.featured-toggle');
  const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
- let current=0,playing=!reducedMotion.matches,timer;
+ let current=0,playing=!reducedMotion.matches,timer,requestNumber=0,outgoing;
+ function finishTransition(){frame.getAnimations({subtree:true}).forEach(animation=>animation.cancel());if(outgoing){outgoing.remove();outgoing=null;}}
  function reflect(){toggle.textContent=playing?'Pristabdyti':'Paleisti';toggle.setAttribute('aria-label',playing?'Pristabdyti automatinį darbų keitimą':'Paleisti automatinį darbų keitimą');}
- function show(index){
-  current=index;
+ async function show(index,animate=true){
+  const request=++requestNumber;
   const slide=slides[index];
+  const ready=new Image();ready.src=slide.src;
+  try{await ready.decode();}catch{return;}
+  if(request!==requestNumber)return;
+  finishTransition();
+  const shouldAnimate=animate&&index!==current&&!reducedMotion.matches;
+  if(shouldAnimate){outgoing=image.cloneNode();outgoing.className='featured-outgoing';outgoing.alt='';outgoing.setAttribute('aria-hidden','true');outgoing.removeAttribute('fetchpriority');frame.append(outgoing);}
+  current=index;
   image.src=slide.src;image.alt=slide.alt;
   link.href=slide.href;link.dataset.title=slide.title;
   if(slide.video)link.dataset.video=slide.video;else delete link.dataset.video;
   const label=slide.video?'Žiūrėti projektą':'Peržiūrėti albumą';
   caption.textContent=label;link.setAttribute('aria-label',`${label}: ${slide.title}`);
   [...dots.children].forEach((button,i)=>button.setAttribute('aria-pressed',String(i===index)));
+  if(shouldAnimate){
+   const options={duration:650,easing:'cubic-bezier(.22,.61,.36,1)'};
+   image.animate([{transform:'translateX(100%)'},{transform:'translateX(0)'}],options);
+   const old=outgoing;
+   old.animate([{transform:'translateX(0)'},{transform:'translateX(-100%)'}],options).finished.then(()=>{old.remove();if(outgoing===old)outgoing=null;}).catch(()=>{});
+  }
   const preload=new Image();preload.src=slides[(index+1)%slides.length].src;
  }
  function schedule(){clearInterval(timer);timer=setInterval(()=>{
@@ -77,6 +92,6 @@
  },6000);}
  slides.forEach((slide,index)=>{const button=document.createElement('button');button.type='button';button.setAttribute('aria-label',`Rodyti darbą: ${slide.title}`);button.setAttribute('aria-pressed',String(index===0));button.addEventListener('click',()=>{show(index);schedule();});dots.append(button);});
  toggle.addEventListener('click',()=>{playing=!playing;reflect();schedule();});
- reducedMotion.addEventListener('change',event=>{if(event.matches){playing=false;reflect();}});
- controls.hidden=false;show(0);reflect();schedule();
+ reducedMotion.addEventListener('change',event=>{if(event.matches){playing=false;finishTransition();reflect();}});
+ controls.hidden=false;show(0,false);reflect();schedule();
 })();
