@@ -70,3 +70,5 @@
 .featured-frame{position:relative;aspect-ratio:16/9;overflow:hidden;background:#28242b;border-radius:2px}
 .featured-frame>img{display:block;width:100%;height:100%;object-fit:contain}
 .featured-frame>.featured-outgoing{position:absolute;inset:0;pointer-events:none}
+
+.portfolio-more{margin-top:28px}

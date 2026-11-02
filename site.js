@@ -9,17 +9,35 @@ document.querySelectorAll('[data-year]').forEach(element => {
 
 const filterGroup = document.querySelector('.filters');
 if (filterGroup) {
+  const projects = [...document.querySelectorAll('[data-category]')];
+  const toggle = document.querySelector('#work-toggle');
+  const count = document.querySelector('#work-count');
+  let filter = 'all', expanded = false;
+  function renderWorks() {
+    const matching = projects.filter(project => filter === 'all' || project.dataset.category === filter);
+    const preview = filter === 'all' ? matching.filter(project => project.hasAttribute('data-home-featured')) : matching.slice(0, 4);
+    const visible = expanded ? matching : preview;
+    projects.forEach(project => { project.hidden = !visible.includes(project); });
+    if (count) count.textContent = visible.length === matching.length ? `/ ${matching.length}` : `/ ${visible.length} iš ${matching.length}`;
+    if (toggle) {
+      toggle.hidden = matching.length <= preview.length;
+      toggle.setAttribute('aria-expanded', String(expanded));
+      toggle.textContent = expanded ? 'Rodyti mažiau' : `Rodyti visus darbus (${matching.length})`;
+    }
+  }
   filterGroup.hidden = false;
   filterGroup.addEventListener('click', event => {
     const button = event.target.closest('button[data-filter]');
     if (!button) return;
+    filter = button.dataset.filter;
+    expanded = false;
     filterGroup.querySelectorAll('button').forEach(item => {
       item.setAttribute('aria-pressed', String(item === button));
     });
-    document.querySelectorAll('[data-category]').forEach(project => {
-      project.hidden = button.dataset.filter !== 'all' && project.dataset.category !== button.dataset.filter;
-    });
+    renderWorks();
   });
+  if (toggle) toggle.addEventListener('click', () => { expanded = !expanded; renderWorks(); });
+  renderWorks();
 }
 
 const mediaDialog = document.querySelector('.media-dialog');
