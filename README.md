@@ -75,3 +75,7 @@ There are no supplied photography samples yet. Photography is listed as a servic
 ## Privacy and media
 
 Fonts and cover images load locally. No analytics, advertising scripts or form service is installed. YouTube's privacy-enhanced player or Spotify's player is loaded only after the visitor chooses a project. Direct platform links remain available if JavaScript is disabled or an embed is blocked. The privacy page describes the present implementation and should be kept consistent with future hosting or form changes.
+
+## SEO update — 2 November 2026
+
+Added irasu-studija.html for recording services in Šalčininkai, linked from homepage and pricing. All four public pages include canonical and Open Graph URLs and Organization/WebPage JSON-LD; the recording page also describes its Service. No unconfirmed street address, phone, opening hours or production credits were added. Search Console, public Business Profile visibility, and HTTPS enforcement still need account-level verification. Structured data does not guarantee ranking or AI inclusion.
