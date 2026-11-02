@@ -67,7 +67,7 @@ const enquiryForm = document.querySelector('#enquiry-form');
 if (enquiryForm) {
   const select = enquiryForm.elements.service;
   const services = {
-    photo: 'Fotografija',
+    photo: 'Fotografavimas',
     audio: 'Garso įrašymas',
     video: 'Filmavimas ir montažas'
   };
