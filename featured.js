@@ -11,12 +11,6 @@
     "title": "Aktorė Jovita Jankelaitytė — YESLI"
   },
   {
-    "src": "assets/foto-gimtadienis-virselis.webp",
-    "alt": "Gimtadienio šventė",
-    "href": "fotografija.html#album-gimtadienis",
-    "title": "Gimtadienio šventė"
-  },
-  {
     "src": "assets/sokis.jpg",
     "alt": "Šimtadienio solo šokis",
     "href": "https://www.youtube.com/watch?v=fU6kw7A7zWc",
@@ -27,7 +21,8 @@
     "src": "assets/foto-pasirodymas-bare-virselis.webp",
     "alt": "Pasirodymas bare",
     "href": "fotografija.html#album-pasirodymas-bare",
-    "title": "Pasirodymas bare"
+    "title": "Pasirodymas bare",
+    "fit": "cover"
   },
   {
     "src": "assets/julija.jpg",
@@ -40,7 +35,8 @@
     "src": "assets/foto-lankininku-varzybos-virselis.webp",
     "alt": "Lankininkų varžybos",
     "href": "fotografija.html#album-lankininku-varzybos",
-    "title": "Lankininkų varžybos"
+    "title": "Lankininkų varžybos",
+    "fit": "cover"
   },
   {
     "src": "assets/ferma.jpg",
@@ -71,7 +67,7 @@
   const shouldAnimate=animate&&index!==current&&!reducedMotion.matches;
   if(shouldAnimate){outgoing=image.cloneNode();outgoing.className='featured-outgoing';outgoing.alt='';outgoing.setAttribute('aria-hidden','true');outgoing.removeAttribute('fetchpriority');frame.append(outgoing);}
   current=index;
-  image.src=slide.src;image.alt=slide.alt;
+  image.src=slide.src;image.alt=slide.alt;image.style.objectFit=slide.fit||'contain';
   link.href=slide.href;link.dataset.title=slide.title;
   if(slide.video)link.dataset.video=slide.video;else delete link.dataset.video;
   const label=slide.video?'Žiūrėti projektą':'Peržiūrėti albumą';
