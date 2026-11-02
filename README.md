@@ -70,7 +70,7 @@ Edit the Lithuanian text directly in the HTML files. Prices are in `kainos.html`
 
 The four YouTube links and Spotify track were selected by the business owner. Cover art was fetched from their official YouTube/Spotify metadata and saved locally. The first three videos credit YESLI as the publishing channel; the fourth is from Kacheen. Exact personal production roles have not been specified, so the site does not invent role credits. The farm video's displayed title is a Lithuanian summary of its original Russian title.
 
-Photography albums are published in fotografija.html: 52 owner-reviewed photos across 9 albums. Cover choices and album titles follow the owner’s review. gallery.css and gallery.js provide responsive album grids and a keyboard-accessible image dialog. WebP derivatives and small cover files live in assets/; the original JPEGs and private review files remain outside the public website directory.
+Photography albums are published in fotografija.html: 48 owner-reviewed photos across 8 albums. Cover choices and album titles follow the owner’s review. gallery.css and gallery.js provide responsive album grids and a keyboard-accessible image dialog. WebP derivatives and small cover files live in assets/; the original JPEGs and private review files remain outside the public website directory.
 
 ## Privacy and media
 
