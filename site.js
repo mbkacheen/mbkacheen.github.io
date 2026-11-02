@@ -30,6 +30,7 @@ if (mediaDialog && typeof mediaDialog.showModal === 'function') {
     link.addEventListener('click', event => {
       // Preserve opening a link in a new tab with modifier keys.
       if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
+      if (!link.dataset.video && !link.dataset.spotify) return;
       event.preventDefault();
       const spotify = Boolean(link.dataset.spotify);
       const frame = document.createElement('iframe');

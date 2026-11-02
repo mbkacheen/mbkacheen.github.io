@@ -54,3 +54,15 @@
 .photo-project .project-image:hover img{transform:none}
 .work-toolbar{flex-wrap:wrap;gap:16px}
 .filters{flex-wrap:wrap}
+
+/* Featured works rotate without moving the surrounding layout. */
+.featured-carousel .hero-film>img{background:#28242b}
+.featured-controls{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:6px 0 8px}
+.featured-dots{display:flex;gap:2px;flex-wrap:wrap}
+.featured-dots button{display:grid;place-items:center;width:28px;height:30px;padding:0;background:none;border:0;border-radius:2px;color:var(--muted)}
+.featured-dots button:before{content:"";width:7px;height:7px;border:1px solid currentColor;border-radius:50%}
+.featured-dots button[aria-pressed="true"]{color:var(--violet-light)}
+.featured-dots button[aria-pressed="true"]:before{background:currentColor}
+.featured-toggle{background:none;border:0;color:var(--muted);font-size:11px;padding:10px 0 10px 12px;min-height:40px}
+.featured-toggle:hover{color:var(--white)}
+@media(max-width:560px){.featured-controls{gap:8px}.featured-dots button{width:26px}.featured-toggle{font-size:10px}}
