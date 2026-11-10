@@ -9,7 +9,7 @@ Static Lithuanian portfolio for kacheen.lt. HTML, CSS and plain JavaScript: no b
 - `index.html` — portfolio, services, about and enquiries. No amounts displayed on the homepage.
 - `kainos.html` — photography from €100/hour, simple voice recording from €50, video quoted per project.
 - `privatumas.html` — explanation of email enquiries and external media players.
-- `styles.css` — responsive styling; violet `#7978DA`, red `#FF4436`, charcoal `#332F35`. Lighter violet is used for readable text on dark backgrounds.
+- `styles.css` — responsive styling; primary near-black `#0D0D0F`, warm white `#F5F1E8`, and tomato red `#FF4436`. Light sections reverse the background and text colors.
 - `site.js` — portfolio filters, click-to-load players, service selection and email preparation.
 - `assets/` — finished logo artwork, project covers, sharing image and locally hosted Albert Sans with its license.
 - `CNAME` — intended custom domain, `kacheen.lt`.
