@@ -3,6 +3,35 @@
 // Everything works from a plain static directory. No service keys or build step.
 const contactEmail = 'info@kacheen.lt';
 
+const youtubeThumbnails = new Map();
+
+function getYouTubeThumbnail(videoId) {
+  if (!youtubeThumbnails.has(videoId)) {
+    const load = async () => {
+      for (const size of ['maxresdefault', 'mqdefault']) {
+        const image = new Image();
+        image.referrerPolicy = 'no-referrer';
+        image.src = `https://i.ytimg.com/vi/${videoId}/${size}.jpg`;
+        try {
+          await image.decode();
+          // YouTube can return a small placeholder for unavailable thumbnails.
+          if (image.naturalWidth >= 320) return image.src;
+        } catch {
+          // Try the next size, then leave the local fallback in place.
+        }
+      }
+      return null;
+    };
+    youtubeThumbnails.set(videoId, load());
+  }
+  return youtubeThumbnails.get(videoId);
+}
+
+document.querySelectorAll('img[data-youtube-thumbnail]').forEach(async image => {
+  const src = await getYouTubeThumbnail(image.dataset.youtubeThumbnail);
+  if (src) image.src = src;
+});
+
 document.querySelectorAll('[data-year]').forEach(element => {
   element.textContent = String(new Date().getFullYear());
 });
@@ -84,11 +113,23 @@ if (mediaDialog && typeof mediaDialog.showModal === 'function') {
 
 const enquiryForm = document.querySelector('#enquiry-form');
 if (enquiryForm) {
+  const enquiryLink = document.querySelector('[data-highlight-enquiry]');
+  let enquiryHighlight;
+  enquiryLink?.addEventListener('click', () => {
+    enquiryHighlight?.cancel();
+    enquiryHighlight = enquiryForm.animate({
+      outlineStyle: ['solid', 'solid'],
+      outlineWidth: ['2px', '2px'],
+      outlineOffset: ['8px', '8px'],
+      outlineColor: ['var(--red)', 'var(--red)', 'transparent']
+    }, 1200);
+  });
+
   const select = enquiryForm.elements.service;
   const services = {
     photo: 'Fotografavimas',
-    audio: 'Garso įrašymas',
-    video: 'Filmavimas ir montažas'
+    audio: 'Garso įrašai ir muzika',
+    video: 'Filmavimas ir montavimas'
   };
   const requestedService = new URLSearchParams(location.search).get('service');
   if (Object.prototype.hasOwnProperty.call(services, requestedService)) select.value = services[requestedService];

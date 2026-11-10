@@ -8,14 +8,23 @@
     "alt": "Interviu su Jovita Jankelaityte",
     "href": "https://www.youtube.com/watch?v=kCEm475it4I",
     "video": "kCEm475it4I",
-    "title": "Aktorė Jovita Jankelaitytė — YESLI"
+    "title": "Aktorė Jovita Jankelaitytė — YESLI",
+    "caption": "Jovita Jankelaitytė / YESLI"
+  },
+  {
+    "src": "assets/foto-lankininku-varzybos-virselis.webp",
+    "alt": "Lankininkų varžybos",
+    "href": "fotografija.html#album-lankininku-varzybos",
+    "title": "Lankininkų varžybos",
+    "fit": "cover"
   },
   {
     "src": "assets/sokis.jpg",
     "alt": "Šimtadienio solo šokis",
     "href": "https://www.youtube.com/watch?v=fU6kw7A7zWc",
     "video": "fU6kw7A7zWc",
-    "title": "Šimtadienio solo šokis"
+    "title": "Šimtadienio solo šokis",
+    "caption": "Šimtadienio solo šokis / SJSG"
   },
   {
     "src": "assets/foto-pasirodymas-bare-virselis.webp",
@@ -29,27 +38,23 @@
     "alt": "Interviu su Julija Koženevska",
     "href": "https://www.youtube.com/watch?v=eyl1jXE_4JM",
     "video": "eyl1jXE_4JM",
-    "title": "Julija Koženevska — YESLI"
-  },
-  {
-    "src": "assets/foto-lankininku-varzybos-virselis.webp",
-    "alt": "Lankininkų varžybos",
-    "href": "fotografija.html#album-lankininku-varzybos",
-    "title": "Lankininkų varžybos",
-    "fit": "cover"
+    "title": "Julija Koženevska — YESLI",
+    "caption": "Julija Koženevska / YESLI"
   },
   {
     "src": "assets/ferma.jpg",
     "alt": "Svajonių ūkis Lietuvoje",
     "href": "https://www.youtube.com/watch?v=Pv9Cp9Azm8Y",
     "video": "Pv9Cp9Azm8Y",
-    "title": "Svajonių ūkis Lietuvoje — YESLI"
+    "title": "Svajonių ūkis Lietuvoje — YESLI",
+    "caption": "Svajonių ūkis Lietuvoje / YESLI"
   }
 ];
  const link=carousel.querySelector('.hero-film');
  const image=link.querySelector('img');
- const frame=document.createElement('div');frame.className='featured-frame';image.before(frame);frame.append(image);
- const caption=link.querySelector('.film-caption span');
+ const frame=link.querySelector('.featured-frame');
+ const title=link.querySelector('.preview-slide-title');
+ const caption=link.querySelector('.preview-slide-action');
  const controls=carousel.querySelector('.featured-controls');
  const dots=carousel.querySelector('.featured-dots');
  const toggle=carousel.querySelector('.featured-toggle');
@@ -60,6 +65,7 @@
  async function show(index,animate=true){
   const request=++requestNumber;
   const slide=slides[index];
+  const thumbnail=slide.video?getYouTubeThumbnail(slide.video):null;
   const ready=new Image();ready.src=slide.src;
   try{await ready.decode();}catch{return;}
   if(request!==requestNumber)return;
@@ -68,9 +74,11 @@
   if(shouldAnimate){outgoing=image.cloneNode();outgoing.className='featured-outgoing';outgoing.alt='';outgoing.setAttribute('aria-hidden','true');outgoing.removeAttribute('fetchpriority');frame.append(outgoing);}
   current=index;
   image.src=slide.src;image.alt=slide.alt;image.style.objectFit=slide.fit||'contain';
+  if(thumbnail)thumbnail.then(src=>{if(src&&request===requestNumber)image.src=src;});
   link.href=slide.href;link.dataset.title=slide.title;
   if(slide.video)link.dataset.video=slide.video;else delete link.dataset.video;
   const label=slide.video?'Žiūrėti projektą':'Peržiūrėti albumą';
+  title.textContent=slide.caption||slide.title;
   caption.textContent=label;link.setAttribute('aria-label',`${label}: ${slide.title}`);
   [...dots.children].forEach((button,i)=>button.setAttribute('aria-pressed',String(i===index)));
   if(shouldAnimate){
@@ -79,7 +87,9 @@
    const old=outgoing;
    old.animate([{transform:'translateX(0)'},{transform:'translateX(-100%)'}],options).finished.then(()=>{old.remove();if(outgoing===old)outgoing=null;}).catch(()=>{});
   }
-  const preload=new Image();preload.src=slides[(index+1)%slides.length].src;
+  const next=slides[(index+1)%slides.length];
+  const preload=new Image();preload.src=next.src;
+  if(next.video)getYouTubeThumbnail(next.video);
  }
  function schedule(){clearInterval(timer);timer=setInterval(()=>{
   const focusWithin=carousel.contains(document.activeElement)&&document.activeElement!==toggle;
