@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="styles.css?v=pasiulymo-mygtukas">
   <script src="site.js?v=pasiulymo-forma" defer></script>
   <script src="featured.js?v=project-credits" defer></script>
-  <link rel="stylesheet" href="preview-home.css?v=pasiulymo-mygtukas">
+  <link rel="stylesheet" href="preview-home.css?v=work-video">
   <link rel="canonical" href="https://kacheen.lt/">
   <meta property="og:url" content="https://kacheen.lt/">
   <script type="application/ld+json">{
@@ -68,10 +68,13 @@
 
   <main id="turinys">
     <section class="preview-hero wrap" id="darbai" aria-labelledby="hero-title">
+      <video class="hero-background" muted loop playsinline aria-hidden="true"
+        data-src="assets/hero-work.mp4"></video>
       <div class="preview-hero-copy">
         <h1 id="hero-title">Garsas. <span class="red-text">Vaizdas.</span></h1>
         <p>Filmuoju, fotografuoju ir įrašau garsą.</p>
         <a class="button button-red button-offer" href="#enquiry-form" data-highlight-enquiry>Gauti pasiūlymą</a>
+        <button class="hero-background-toggle" type="button" hidden>Pristabdyti foną</button>
       </div>
       <div class="featured-carousel" id="atrinkti-darbai" role="region" aria-roledescription="karuselė" aria-label="Atrinkti darbai">
         <a class="hero-film" href="https://www.youtube.com/watch?v=kCEm475it4I" data-video="kCEm475it4I" data-title="Aktorė Jovita Jankelaitytė — YESLI" aria-label="Žiūrėti interviu su Jovita Jankelaityte">
@@ -87,6 +90,34 @@
         </div>
       </div>
     </section>
+    <script>
+      (() => {
+        const video = document.querySelector('.hero-background');
+        const toggle = document.querySelector('.hero-background-toggle');
+        const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+        video.addEventListener('playing', () => {
+          video.classList.add('is-ready');
+          toggle.hidden = false;
+          toggle.textContent = 'Pristabdyti foną';
+        });
+        video.addEventListener('pause', () => {
+          toggle.textContent = 'Paleisti foną';
+        });
+        toggle.addEventListener('click', () => {
+          if (video.paused) video.play().catch(() => {});
+          else video.pause();
+        });
+        reducedMotion.addEventListener('change', () => {
+          if (reducedMotion.matches) video.pause();
+        });
+
+        if (!reducedMotion.matches) {
+          video.src = video.dataset.src;
+          video.play().catch(() => {});
+        }
+      })();
+    </script>
 
     <section class="preview-services section-light" id="paslaugos" aria-labelledby="services-title">
       <div class="wrap">
