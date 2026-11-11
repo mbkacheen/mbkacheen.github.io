@@ -33,6 +33,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      - name: Assemble the 720p background video
+        run: |
+          cat assets/hero-work-720p.part-a assets/hero-work-720p.part-b > assets/hero-work-720p.mp4
+          rm -- assets/hero-work-720p.part-a assets/hero-work-720p.part-b
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
