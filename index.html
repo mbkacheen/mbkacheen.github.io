@@ -14,9 +14,9 @@
   <link rel="icon" href="/favicon-ee.png" type="image/png" sizes="64x64">
   <link rel="preload" href="assets/albert-sans.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="stylesheet" href="styles.css?v=pasiulymo-mygtukas">
-  <script src="site.js?v=pasiulymo-forma" defer></script>
-  <script src="featured.js?v=project-credits" defer></script>
-  <link rel="stylesheet" href="preview-home.css?v=work-video">
+  <script src="site.js?v=youtube-thumbs" defer></script>
+  <script src="featured.js?v=youtube-thumbs" defer></script>
+  <link rel="stylesheet" href="preview-home.css?v=light-video">
   <link rel="canonical" href="https://kacheen.lt/">
   <meta property="og:url" content="https://kacheen.lt/">
   <script type="application/ld+json">{
@@ -68,8 +68,8 @@
 
   <main id="turinys">
     <section class="preview-hero wrap" id="darbai" aria-labelledby="hero-title">
-      <video class="hero-background" muted loop playsinline aria-hidden="true"
-        data-src="assets/hero-work.mp4"></video>
+      <video class="hero-background" muted loop playsinline preload="none" aria-hidden="true"
+        data-src="assets/hero-work-compact.mp4"></video>
       <div class="preview-hero-copy">
         <h1 id="hero-title">Garsas. <span class="red-text">Vaizdas.</span></h1>
         <p>Filmuoju, fotografuoju ir įrašau garsą.</p>
@@ -79,7 +79,7 @@
       <div class="featured-carousel" id="atrinkti-darbai" role="region" aria-roledescription="karuselė" aria-label="Atrinkti darbai">
         <a class="hero-film" href="https://www.youtube.com/watch?v=kCEm475it4I" data-video="kCEm475it4I" data-title="Aktorė Jovita Jankelaitytė — YESLI" aria-label="Žiūrėti interviu su Jovita Jankelaityte">
           <div class="featured-frame">
-            <img src="assets/jovita.jpg" alt="Interviu su Jovita Jankelaityte" width="1280" height="720" fetchpriority="high" referrerpolicy="no-referrer">
+            <img src="https://i.ytimg.com/vi_webp/kCEm475it4I/maxresdefault.webp" alt="Interviu su Jovita Jankelaityte" width="1280" height="720" fetchpriority="high" referrerpolicy="no-referrer">
             <span class="project-play" aria-hidden="true">▶</span>
           </div>
           <div class="film-caption"><span class="preview-slide-title">Jovita Jankelaitytė / YESLI</span><span class="preview-slide-action">Žiūrėti projektą</span></div>
@@ -112,10 +112,14 @@
           if (reducedMotion.matches) video.pause();
         });
 
-        if (!reducedMotion.matches) {
+        function startBackground() {
+          if (reducedMotion.matches || navigator.connection?.saveData) return;
           video.src = video.dataset.src;
           video.play().catch(() => {});
         }
+
+        if (document.readyState === 'complete') startBackground();
+        else window.addEventListener('load', startBackground, { once: true });
       })();
     </script>
 

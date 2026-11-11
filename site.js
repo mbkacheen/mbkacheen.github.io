@@ -5,19 +5,26 @@ const contactEmail = 'info@kacheen.lt';
 
 const youtubeThumbnails = new Map();
 
+function youtubeThumbnailFallback(videoId) {
+  return `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
+}
+
 function getYouTubeThumbnail(videoId) {
   if (!youtubeThumbnails.has(videoId)) {
     const load = async () => {
-      for (const size of ['maxresdefault', 'mqdefault']) {
+      const sources = [
+        `https://i.ytimg.com/vi_webp/${videoId}/maxresdefault.webp`,
+        youtubeThumbnailFallback(videoId)
+      ];
+      for (const src of sources) {
         const image = new Image();
         image.referrerPolicy = 'no-referrer';
-        image.src = `https://i.ytimg.com/vi/${videoId}/${size}.jpg`;
+        image.src = src;
         try {
           await image.decode();
-          // YouTube can return a small placeholder for unavailable thumbnails.
-          if (image.naturalWidth >= 320) return image.src;
+          if (image.naturalWidth >= 320) return src;
         } catch {
-          // Try the next size, then leave the local fallback in place.
+          // Continue to the next YouTube thumbnail size.
         }
       }
       return null;
@@ -27,9 +34,17 @@ function getYouTubeThumbnail(videoId) {
   return youtubeThumbnails.get(videoId);
 }
 
-document.querySelectorAll('img[data-youtube-thumbnail]').forEach(async image => {
-  const src = await getYouTubeThumbnail(image.dataset.youtubeThumbnail);
-  if (src) image.src = src;
+document.querySelectorAll('img[data-youtube-thumbnail]').forEach(image => {
+  const fallback = youtubeThumbnailFallback(image.dataset.youtubeThumbnail);
+  function checkThumbnail() {
+    // YouTube may return a small placeholder for an unavailable size.
+    if (!image.complete || image.naturalWidth >= 320) return;
+    if (image.src !== fallback) image.src = fallback;
+    else image.style.visibility = 'hidden';
+  }
+  image.addEventListener('load', checkThumbnail);
+  image.addEventListener('error', checkThumbnail);
+  checkThumbnail();
 });
 
 document.querySelectorAll('[data-year]').forEach(element => {
