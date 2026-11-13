@@ -1,0 +1,12 @@
+Guitar
+Spanish Classical Guitar, FreePats, recorded by Roberto (2019-06-18 sound bank).
+https://freepats.zenvoid.org/Guitar/acoustic-guitar.html
+
+Piano
+Grand Piano, Steinway B, Versilian Community Sample Library by Versilian Studios LLC.
+https://github.com/sgossner/VCSL/tree/master/Chordophones/Zithers/Grand%20Piano%2C%20Steinway%20B
+
+Both sources are dedicated to the public domain under CC0 1.0.
+https://creativecommons.org/publicdomain/zero/1.0/
+
+The clips in this app were trimmed, converted to mono, and level-adjusted.

@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d0d0f">
+  <meta name="description" content="Learn your guitar fretboard with self-paced practice and timed drills.">
+  <title>Guitar Drills</title>
+  <link rel="icon" href="brand/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script src="drill.js" defer></script>
+</head>
+<body>
+  <main>
+    <header class="app-header">
+      <h1>Guitar Drills</h1>
+      <img class="brand-logo" src="brand/kacheen.svg" alt="Kacheen" width="1783" height="440">
+    </header>
+    <nav class="section-nav" aria-label="Guitar Drills">
+      <button id="open-practice" type="button" aria-controls="practice-page" aria-pressed="true">Practice</button>
+      <button id="open-play" type="button" aria-controls="practice-page" aria-pressed="false">Play</button>
+      <button id="open-learn" type="button" aria-controls="learn-page" aria-pressed="false">Learn</button>
+    </nav>
+    <div id="practice-page">
+    <section class="prompt" aria-label="Current exercise" hidden>
+      <div class="strings" aria-hidden="true"></div>
+      <div class="prompt-content" aria-live="polite" aria-atomic="true">
+        <span class="prompt-label" id="prompt-label">Ready</span>
+        <span class="note" id="note" aria-hidden="true">–</span>
+        <p id="instruction">Find the note on the fretboard.</p>
+      </div>
+      <div id="answer" hidden>
+        <div class="answer-heading" role="status">
+          <span class="prompt-label">Answer</span>
+          <strong id="answer-note"></strong>
+        </div>
+        <div class="fretboard-scroll" tabindex="0" role="region" aria-label="Fretboard in standard tuning, frets 0 to 22">
+          <table class="fretboard" id="fretboard" aria-label="Correct note positions"></table>
+        </div>
+        <div class="answer-key" id="interval-answer" hidden>
+          <span><i class="root-swatch"></i> Root</span>
+          <span><i class="upper-swatch"></i> Higher note</span>
+        </div>
+        <ol class="answer-examples" id="answer-examples" aria-label="Example positions"></ol>
+        <p class="fretboard-caption">0 = open string <span class="scroll-hint"> · Scroll for higher frets</span></p>
+      </div>
+      <div class="countdown" id="countdown" hidden>
+        <span id="seconds" aria-hidden="true"></span>
+        <div class="track" aria-hidden="true"><div id="bar"></div></div>
+      </div>
+    </section>
+    <fieldset id="settings">
+      <legend class="sr-only">Practice settings</legend>
+      <fieldset id="exercise-types">
+        <legend>What to play</legend>
+        <div class="exercise-choices">
+          <button type="button" value="0" aria-pressed="true">Single note</button>
+          <button type="button" value="3" aria-pressed="false">Minor third</button>
+          <button type="button" value="4" aria-pressed="false">Major third</button>
+          <button type="button" value="5" aria-pressed="false">Perfect fourth</button>
+          <button type="button" value="7" aria-pressed="false">Perfect fifth</button>
+          <button type="button" value="12" aria-pressed="false">Octave</button>
+        </div>
+        <details>
+          <summary>More intervals</summary>
+          <div class="exercise-choices">
+            <button type="button" value="1" aria-pressed="false">Minor second</button>
+            <button type="button" value="2" aria-pressed="false">Major second</button>
+            <button type="button" value="6" aria-pressed="false">Tritone</button>
+            <button type="button" value="8" aria-pressed="false">Minor sixth</button>
+            <button type="button" value="9" aria-pressed="false">Major sixth</button>
+            <button type="button" value="10" aria-pressed="false">Minor seventh</button>
+            <button type="button" value="11" aria-pressed="false">Major seventh</button>
+          </div>
+        </details>
+      </fieldset>
+      <label data-timed hidden>Time to play
+        <select id="speed">
+          <option value="3">3 seconds</option>
+          <option value="5" selected>5 seconds</option>
+          <option value="10">10 seconds</option>
+          <option value="15">15 seconds</option>
+          <option value="20">20 seconds</option>
+          <option value="30">30 seconds</option>
+        </select>
+      </label>
+      <label data-timed hidden>Show answer for
+        <select id="answer-time">
+          <option value="0">Off</option>
+          <option value="1">1 second</option>
+          <option value="2">2 seconds</option>
+          <option value="3" selected>3 seconds</option>
+          <option value="5">5 seconds</option>
+          <option value="10">10 seconds</option>
+        </select>
+      </label>
+      <label>Positions
+        <select id="answer-view">
+          <option value="random">Random per round</option>
+          <option value="all">All positions</option>
+          <optgroup label="By string">
+            <option value="string-6">6 · Low E</option>
+            <option value="string-5">5 · A</option>
+            <option value="string-4">4 · D</option>
+            <option value="string-3">3 · G</option>
+            <option value="string-2">2 · B</option>
+            <option value="string-1">1 · High E</option>
+          </optgroup>
+        </select>
+      </label>
+      <label>Sound
+        <select id="sound">
+          <option value="off">Off</option>
+          <option value="play" selected>When the note appears</option>
+          <option value="answer">When the answer appears</option>
+        </select>
+      </label>
+      <label>Tone
+        <select id="tone">
+          <option value="guitar">Guitar</option>
+          <option value="piano">Piano</option>
+          <option value="synth">Synth</option>
+        </select>
+      </label>
+    </fieldset>
+    <div class="practice-actions">
+      <button id="toggle" type="button" aria-keyshortcuts="Space" aria-describedby="practice-shortcut">Start practice</button>
+      <button id="advance" type="button" hidden>Show answer</button>
+    </div>
+    <p id="practice-shortcut">Space to start or stop</p>
+    <p id="sound-status" class="sound-status" role="status" hidden></p>
+    </div>
+    <section id="learn-page" aria-labelledby="learn-title" hidden>
+      <header class="learn-intro">
+        <h2 id="learn-title" class="sr-only">Learn</h2>
+        <div class="section-nav" role="group" aria-label="Choose what to explore">
+          <button id="explore-intervals" type="button" aria-pressed="true">Explore intervals</button>
+          <button id="explore-scales" type="button" aria-pressed="false">Explore scales</button>
+        </div>
+        <p id="interval-intro">An interval is the distance between two notes. On one string, moving up one fret raises the pitch by one semitone. Moving up 12 frets gives you the same note name an octave higher.</p>
+        <p id="scale-intro" hidden>A scale is a sequence of notes arranged by pitch. Choose a scale and a starting note to see where its notes fall across the fretboard.</p>
+      </header>
+      <div id="learn-intervals" class="learn-intervals" role="group" aria-label="Choose an interval"></div>
+      <div id="learn-scales" class="learn-intervals" role="group" aria-label="Choose a scale" hidden></div>
+      <div class="learn-example">
+        <div class="learn-example-heading">
+          <div>
+            <h3 id="learn-interval-name"></h3>
+            <p id="learn-distance"></p>
+          </div>
+          <div class="learn-controls">
+            <label>Starting note
+              <select id="learn-root"></select>
+            </label>
+            <button id="hear-interval" type="button">Hear interval</button>
+          </div>
+        </div>
+        <p id="learn-explanation" aria-live="polite"></p>
+        <div class="fretboard-scroll" tabindex="0" role="region" aria-label="Fretboard in standard tuning, frets 0 to 22">
+          <table class="fretboard" id="learn-fretboard" aria-label="All positions on the fretboard" aria-describedby="learn-pairs"></table>
+        </div>
+        <p class="fretboard-caption" id="learn-pairs"></p>
+        <p class="fretboard-caption">0 = open string <span class="scroll-hint"> · Scroll for higher frets</span></p>
+        <div class="answer-key">
+          <span><i class="root-swatch"></i> Starting note</span>
+          <span><i class="upper-swatch"></i> <span id="learn-other-notes">Higher note</span></span>
+        </div>
+        <p id="learn-sound-status" class="sound-status" role="status" hidden></p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
