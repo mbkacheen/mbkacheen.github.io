@@ -14,11 +14,15 @@
   <main>
     <header class="app-header">
       <h1>Guitar Drills</h1>
-      <img class="brand-logo" src="brand/kacheen.svg" alt="Kacheen" width="1783" height="440">
+      <div class="brand">
+        <img class="brand-logo" src="brand/kacheen.svg" alt="Kacheen" width="1783" height="440">
+        <a class="support-link" href="https://ko-fi.com/zolnerovic" target="_blank" rel="noopener">Buy me a coffee</a>
+      </div>
     </header>
     <nav class="section-nav" aria-label="Guitar Drills">
-      <button id="open-practice" type="button" aria-controls="practice-page" aria-pressed="true">Practice</button>
-      <button id="open-play" type="button" aria-controls="practice-page" aria-pressed="false">Play</button>
+      <button id="open-play" type="button" aria-controls="practice-page" aria-pressed="true">Play</button>
+      <button id="open-practice" type="button" aria-controls="practice-page" aria-pressed="false">Practice</button>
+      <button id="open-metronome" type="button" aria-controls="metronome-page" aria-pressed="false">Metronome</button>
       <button id="open-learn" type="button" aria-controls="learn-page" aria-pressed="false">Learn</button>
     </nav>
     <div id="practice-page">
@@ -34,15 +38,25 @@
           <span class="prompt-label">Answer</span>
           <strong id="answer-note"></strong>
         </div>
-        <div class="fretboard-scroll" tabindex="0" role="region" aria-label="Fretboard in standard tuning, frets 0 to 22">
-          <table class="fretboard" id="fretboard" aria-label="Correct note positions"></table>
+        <div class="answer-views">
+          <div id="position-answer">
+            <div class="fretboard-scroll" tabindex="0" role="region" aria-label="Fretboard in standard tuning, frets 0 to 22">
+              <table class="fretboard" id="fretboard" aria-label="Correct note positions"></table>
+            </div>
+            <div class="answer-key" id="interval-answer" hidden>
+              <span><i class="root-swatch"></i> Root</span>
+              <span><i class="upper-swatch"></i> Higher note</span>
+            </div>
+            <p class="fretboard-caption">0 = open string <span class="scroll-hint"> · Scroll for higher frets</span></p>
+          </div>
+          <div id="chord-answer" hidden>
+            <figure class="chord-diagram" role="img">
+              <div class="chord-string-marks" aria-hidden="true"></div>
+              <div class="chord-grid" aria-hidden="true"><span class="chord-start-fret"></span></div>
+            </figure>
+            <p class="fretboard-caption chord-key">Example shape · ○ = open string · × = mute</p>
+          </div>
         </div>
-        <div class="answer-key" id="interval-answer" hidden>
-          <span><i class="root-swatch"></i> Root</span>
-          <span><i class="upper-swatch"></i> Higher note</span>
-        </div>
-        <ol class="answer-examples" id="answer-examples" aria-label="Example positions"></ol>
-        <p class="fretboard-caption">0 = open string <span class="scroll-hint"> · Scroll for higher frets</span></p>
       </div>
       <div class="countdown" id="countdown" hidden>
         <span id="seconds" aria-hidden="true"></span>
@@ -54,27 +68,33 @@
       <fieldset id="exercise-types">
         <legend>What to play</legend>
         <div class="exercise-choices">
-          <button type="button" value="0" aria-pressed="true">Single note</button>
-          <button type="button" value="3" aria-pressed="false">Minor third</button>
-          <button type="button" value="4" aria-pressed="false">Major third</button>
-          <button type="button" value="5" aria-pressed="false">Perfect fourth</button>
-          <button type="button" value="7" aria-pressed="false">Perfect fifth</button>
-          <button type="button" value="12" aria-pressed="false">Octave</button>
+          <button id="random-intervals" type="button" aria-pressed="true">Random intervals</button>
+          <button id="random-chords" type="button" aria-pressed="false">Random chords</button>
         </div>
         <details>
-          <summary>More intervals</summary>
+          <summary>Choose intervals <span class="selection-count" id="interval-count"></span></summary>
           <div class="exercise-choices">
+            <button type="button" value="0" aria-pressed="false">Single note</button>
             <button type="button" value="1" aria-pressed="false">Minor second</button>
             <button type="button" value="2" aria-pressed="false">Major second</button>
+            <button type="button" value="3" aria-pressed="false">Minor third</button>
+            <button type="button" value="4" aria-pressed="false">Major third</button>
+            <button type="button" value="5" aria-pressed="false">Perfect fourth</button>
             <button type="button" value="6" aria-pressed="false">Tritone</button>
+            <button type="button" value="7" aria-pressed="false">Perfect fifth</button>
             <button type="button" value="8" aria-pressed="false">Minor sixth</button>
             <button type="button" value="9" aria-pressed="false">Major sixth</button>
             <button type="button" value="10" aria-pressed="false">Minor seventh</button>
             <button type="button" value="11" aria-pressed="false">Major seventh</button>
+            <button type="button" value="12" aria-pressed="false">Octave</button>
           </div>
         </details>
+        <details>
+          <summary>Choose chords <span class="selection-count" id="chord-count"></span></summary>
+          <div id="drill-chords" class="exercise-choices"></div>
+        </details>
       </fieldset>
-      <label data-timed hidden>Time to play
+      <label data-timed>Time to play
         <select id="speed">
           <option value="3">3 seconds</option>
           <option value="5" selected>5 seconds</option>
@@ -84,20 +104,19 @@
           <option value="30">30 seconds</option>
         </select>
       </label>
-      <label data-timed hidden>Show answer for
+      <label data-timed>Show answer for
         <select id="answer-time">
           <option value="0">Off</option>
           <option value="1">1 second</option>
           <option value="2">2 seconds</option>
-          <option value="3" selected>3 seconds</option>
-          <option value="5">5 seconds</option>
+          <option value="3">3 seconds</option>
+          <option value="5" selected>5 seconds</option>
           <option value="10">10 seconds</option>
         </select>
       </label>
-      <label>Positions
-        <select id="answer-view">
+      <label><span id="positions-label">Positions</span>
+        <select id="answer-view" aria-labelledby="positions-label" aria-describedby="positions-hint">
           <option value="random">Random per round</option>
-          <option value="all">All positions</option>
           <optgroup label="By string">
             <option value="string-6">6 · Low E</option>
             <option value="string-5">5 · A</option>
@@ -107,6 +126,7 @@
             <option value="string-1">1 · High E</option>
           </optgroup>
         </select>
+        <span id="positions-hint" hidden>For notes and intervals only.</span>
       </label>
       <label>Sound
         <select id="sound">
@@ -124,24 +144,55 @@
       </label>
     </fieldset>
     <div class="practice-actions">
-      <button id="toggle" type="button" aria-keyshortcuts="Space" aria-describedby="practice-shortcut">Start practice</button>
+      <button id="toggle" type="button" aria-keyshortcuts="Space" aria-describedby="practice-shortcut">Start timed drill</button>
       <button id="advance" type="button" hidden>Show answer</button>
     </div>
     <p id="practice-shortcut">Space to start or stop</p>
     <p id="sound-status" class="sound-status" role="status" hidden></p>
     </div>
+    <section id="metronome-page" aria-labelledby="metronome-title" hidden>
+      <h2 id="metronome-title" class="sr-only">Metronome</h2>
+      <div class="metronome-panel">
+        <label class="metronome-tempo" for="metronome-bpm">
+          <input id="metronome-bpm" type="number" min="30" max="300" step="1" value="120" inputmode="numeric">
+          <span>BPM</span>
+        </label>
+        <div id="metronome-beats" class="metronome-beats" aria-hidden="true"></div>
+        <div class="metronome-settings">
+          <label>Beats per bar
+            <select id="metronome-meter">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4" selected>4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+            </select>
+          </label>
+          <button id="tap-tempo" class="running" type="button">Tap tempo</button>
+        </div>
+      </div>
+      <button id="metronome-toggle" type="button" aria-keyshortcuts="Space" aria-describedby="metronome-shortcut">Start metronome</button>
+      <p id="metronome-shortcut">Space to start or stop</p>
+      <p id="metronome-status" class="sound-status" role="status" hidden></p>
+    </section>
     <section id="learn-page" aria-labelledby="learn-title" hidden>
       <header class="learn-intro">
         <h2 id="learn-title" class="sr-only">Learn</h2>
         <div class="section-nav" role="group" aria-label="Choose what to explore">
           <button id="explore-intervals" type="button" aria-pressed="true">Explore intervals</button>
           <button id="explore-scales" type="button" aria-pressed="false">Explore scales</button>
+          <button id="explore-chords" type="button" aria-pressed="false">Explore chords</button>
         </div>
         <p id="interval-intro">An interval is the distance between two notes. On one string, moving up one fret raises the pitch by one semitone. Moving up 12 frets gives you the same note name an octave higher.</p>
         <p id="scale-intro" hidden>A scale is a sequence of notes arranged by pitch. Choose a scale and a starting note to see where its notes fall across the fretboard.</p>
+        <p id="chord-intro" hidden>Choose a root and chord type to see its notes across the neck and how to play them together.</p>
       </header>
       <div id="learn-intervals" class="learn-intervals" role="group" aria-label="Choose an interval"></div>
       <div id="learn-scales" class="learn-intervals" role="group" aria-label="Choose a scale" hidden></div>
+      <div id="learn-chords" class="learn-intervals" role="group" aria-label="Choose a chord type" hidden></div>
       <div class="learn-example">
         <div class="learn-example-heading">
           <div>
@@ -156,6 +207,19 @@
           </div>
         </div>
         <p id="learn-explanation" aria-live="polite"></p>
+        <div id="chord-shape" hidden>
+          <div class="chord-shape-heading">
+            <h4>Guitar shape</h4>
+            <label>Voicing <select id="chord-voicing"></select></label>
+          </div>
+          <figure id="chord-diagram" class="chord-diagram" role="img">
+            <div class="chord-string-marks" aria-hidden="true"></div>
+            <div class="chord-grid" aria-hidden="true">
+              <span class="chord-start-fret"></span>
+            </div>
+          </figure>
+          <p class="fretboard-caption chord-key">○ = open string · × = mute</p>
+        </div>
         <div class="fretboard-scroll" tabindex="0" role="region" aria-label="Fretboard in standard tuning, frets 0 to 22">
           <table class="fretboard" id="learn-fretboard" aria-label="All positions on the fretboard" aria-describedby="learn-pairs"></table>
         </div>
