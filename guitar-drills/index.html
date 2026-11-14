@@ -8,7 +8,7 @@
   <title>Guitar Drills</title>
   <link rel="icon" href="brand/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css?v=7570669">
-    <script src="drill.js?v=c473381" defer></script>
+  <script src="drill.js?v=dcd7980" defer></script>
 </head>
 <body>
   <main>
@@ -70,6 +70,7 @@
         <div class="exercise-choices">
           <button id="random-intervals" type="button" aria-pressed="true">Random intervals</button>
           <button id="random-chords" type="button" aria-pressed="false">Random chords</button>
+          <button id="speedrun" type="button" aria-pressed="false">Speedrun</button>
         </div>
         <details>
           <summary>Choose intervals <span class="selection-count" id="interval-count"></span></summary>
@@ -94,7 +95,14 @@
           <div id="drill-chords" class="exercise-choices"></div>
         </details>
       </fieldset>
-      <label data-timed>Time to play
+      <label id="speedrun-time-setting" hidden>Time to play
+        <select id="speedrun-time">
+          <option value="1">1 second</option>
+          <option value="2" selected>2 seconds</option>
+          <option value="3">3 seconds</option>
+        </select>
+      </label>
+      <label data-standard-setting data-timed>Time to play
         <select id="speed">
           <option value="3">3 seconds</option>
           <option value="5" selected>5 seconds</option>
@@ -104,7 +112,7 @@
           <option value="30">30 seconds</option>
         </select>
       </label>
-      <label data-timed>Show answer for
+      <label data-standard-setting data-timed>Show answer for
         <select id="answer-time">
           <option value="0">Off</option>
           <option value="1">1 second</option>
@@ -114,7 +122,7 @@
           <option value="10">10 seconds</option>
         </select>
       </label>
-      <label><span id="positions-label">Positions</span>
+      <label data-standard-setting><span id="positions-label">Positions</span>
         <select id="answer-view" aria-labelledby="positions-label" aria-describedby="positions-hint">
           <option value="random">Random per round</option>
           <optgroup label="By string">
@@ -128,14 +136,14 @@
         </select>
         <span id="positions-hint" hidden>For notes and intervals only.</span>
       </label>
-      <label>Sound
+      <label data-standard-setting>Sound
         <select id="sound">
           <option value="off">Off</option>
           <option value="play" selected>When the note appears</option>
           <option value="answer">When the answer appears</option>
         </select>
       </label>
-      <label>Tone
+      <label data-standard-setting>Tone
         <select id="tone">
           <option value="guitar">Guitar</option>
           <option value="piano">Piano</option>
@@ -145,7 +153,7 @@
     </fieldset>
     <div class="practice-actions">
       <button id="toggle" type="button" aria-keyshortcuts="Space" aria-describedby="practice-shortcut">Start timed drill</button>
-      <button id="advance" type="button" hidden>Show answer</button>
+      <button id="advance" type="button" aria-keyshortcuts="Space" hidden>Show answer</button>
     </div>
     <p id="practice-shortcut">Space to start or stop</p>
     <p id="sound-status" class="sound-status" role="status" hidden></p>

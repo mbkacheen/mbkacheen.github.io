@@ -15,7 +15,8 @@ const drillChordChoices = document.querySelector("#drill-chords");
 const chordOptions = new Map();
 const randomIntervals = document.querySelector("#random-intervals");
 const randomChords = document.querySelector("#random-chords");
-const randomModes = [randomIntervals, randomChords];
+const speedrun = document.querySelector("#speedrun");
+const presetModes = [randomIntervals, randomChords, speedrun];
 const intervalCount = document.querySelector("#interval-count");
 const chordCount = document.querySelector("#chord-count");
 const positionsHint = document.querySelector("#positions-hint");
@@ -30,7 +31,9 @@ const openLearn = document.querySelector("#open-learn");
 const prompt = document.querySelector(".prompt");
 const shortcut = document.querySelector("#practice-shortcut");
 const speed = document.querySelector("#speed");
-const timedSettings = document.querySelectorAll("[data-timed]");
+const standardSettings = document.querySelectorAll("[data-standard-setting]");
+const speedrunTimeSetting = document.querySelector("#speedrun-time-setting");
+const speedrunTime = document.querySelector("#speedrun-time");
 const answerTime = document.querySelector("#answer-time");
 const answerView = document.querySelector("#answer-view");
 const sound = document.querySelector("#sound");
@@ -112,7 +115,8 @@ function updateInstruction() {
     const hasExercise = exercises.length > 0;
     toggle.disabled = !hasExercise;
     positionsHint.hidden = !exercises.some(option => chordOptions.has(option));
-    shortcut.textContent = hasExercise ? "Space to start or stop" : "Choose at least one exercise.";
+    shortcut.textContent = !hasExercise ? "Choose at least one exercise."
+      : timed || isPressed(speedrun) ? "Space to start or stop" : "Space to start, show the answer, or advance";
     instruction.textContent = hasExercise ? "Find the note on the fretboard." : "Choose at least one exercise.";
     return;
   }
@@ -131,6 +135,7 @@ function randomItem(items) {
 }
 
 function selectedExercises() {
+  if (isPressed(speedrun)) return [speedrun];
   if (isPressed(randomIntervals)) return intervalOptions.filter(option => Number(option.value) > 0);
   if (isPressed(randomChords)) return [...chordOptions.keys()];
   return [...intervalOptions, ...chordOptions.keys()].filter(isPressed);
@@ -161,9 +166,13 @@ function updateSoundSetting() {
 }
 
 function updateMode() {
-  for (const setting of timedSettings) setting.hidden = !timed;
-  toggle.textContent = timed ? "Start timed drill" : "Start practice";
-  updateSoundSetting();
+  const speedrunActive = isPressed(speedrun);
+  speedrunTimeSetting.hidden = !speedrunActive;
+  for (const setting of standardSettings) {
+    setting.hidden = speedrunActive || (!timed && setting.hasAttribute("data-timed"));
+  }
+  toggle.textContent = speedrunActive ? "Start speedrun" : timed ? "Start timed drill" : "Start practice";
+  if (!speedrunActive) updateSoundSetting();
 }
 
 function showSoundStatus(message) {
@@ -236,10 +245,11 @@ function playSynth(pitch, onset, output = cueOutput) {
 function playCue(phase) {
   cueOutput?.disconnect();
   cueOutput = undefined;
-  if (sound.value !== phase || !practiceOutput) return;
+  const speedrunActive = isPressed(speedrun);
+  if ((speedrunActive ? "play" : sound.value) !== phase || !practiceOutput) return;
   cueOutput = audioContext.createGain();
   cueOutput.connect(practiceOutput);
-  const startTime = audioContext.currentTime + cueDelay;
+  const startTime = audioContext.currentTime + (speedrunActive ? 0 : cueDelay);
   if (round.chord) {
     playChord(round.frets, startTime, instrumentSamples, cueOutput);
     return;
@@ -283,8 +293,13 @@ function startTimer(milliseconds, onElapsed) {
 function nextRound() {
   answer.hidden = true;
   const exercise = randomItem(selectedExercises());
+  const speedrunActive = exercise === speedrun;
   const nextChord = chordOptions.get(exercise);
-  if (nextChord) {
+  if (speedrunActive) {
+    const choices = spellings.map((_, pitch) => pitch).filter(pitch => pitch !== rootClass);
+    rootClass = randomItem(choices);
+    round = { semitones: 0, count: 1, string: 0 };
+  } else if (nextChord) {
     const choices = spellings.map((_, pitch) => pitch).filter(pitch => pitch !== rootClass);
     rootClass = randomItem(choices);
     round = { chord: nextChord, frets: getChordVoicings(nextChord, rootClass)[0].frets };
@@ -305,7 +320,9 @@ function nextRound() {
   noteDisplay.removeAttribute("aria-hidden");
   promptContent.hidden = false;
 
-  if (timed) {
+  if (speedrunActive) {
+    startTimer(Number(speedrunTime.value) * 1000, nextRound);
+  } else if (timed) {
     const reveal = Number(answerTime.value) ? showAnswer : nextRound;
     startTimer(Number(speed.value) * 1000, reveal);
   } else {
@@ -367,12 +384,13 @@ function renderAnswer(roots, semitones) {
 }
 
 async function start() {
+  const speedrunActive = isPressed(speedrun);
   prompt.hidden = false;
   soundStatus.hidden = true;
   settings.disabled = true;
   toggle.classList.add("running");
-  toggle.textContent = timed ? "Stop drill" : "Stop practice";
-  if (sound.value !== "off") {
+  toggle.textContent = speedrunActive ? "Stop speedrun" : timed ? "Stop drill" : "Stop practice";
+  if (speedrunActive || sound.value !== "off") {
     let output;
     try {
       const Audio = window.AudioContext || window.webkitAudioContext;
@@ -380,7 +398,7 @@ async function start() {
       output = audioContext.createGain();
       output.connect(audioContext.destination);
       practiceOutput = output;
-      const instrument = toneSelect.value;
+      const instrument = speedrunActive ? "guitar" : toneSelect.value;
       instrumentSamples = undefined;
       // Resume from the Start button gesture before waiting for recordings.
       const resume = audioContext.resume();
@@ -402,7 +420,7 @@ async function start() {
       showSoundStatus("Sound could not load. Practice will continue silently.");
     }
   }
-  countdown.hidden = !timed;
+  countdown.hidden = !timed && !speedrunActive;
   nextRound();
 }
 
@@ -433,11 +451,11 @@ exerciseTypes.addEventListener("click", event => {
   const button = event.target.closest("button");
   if (!button || settings.disabled) return;
   const manualOptions = [...intervalOptions, ...chordOptions.keys()];
-  if (randomModes.includes(button)) {
-    for (const mode of randomModes) mode.setAttribute("aria-pressed", String(mode === button));
+  if (presetModes.includes(button)) {
+    for (const mode of presetModes) mode.setAttribute("aria-pressed", String(mode === button));
     for (const option of manualOptions) option.setAttribute("aria-pressed", "false");
   } else if (manualOptions.includes(button)) {
-    for (const mode of randomModes) mode.setAttribute("aria-pressed", "false");
+    for (const mode of presetModes) mode.setAttribute("aria-pressed", "false");
     button.setAttribute("aria-pressed", String(!isPressed(button)));
   }
   for (const [options, label] of [[intervalOptions, intervalCount], [[...chordOptions.keys()], chordCount]]) {
@@ -445,6 +463,7 @@ exerciseTypes.addEventListener("click", event => {
     label.textContent = count ? ` · ${count} selected` : "";
   }
   updateInstruction();
+  updateMode();
 });
 sound.addEventListener("change", updateSoundSetting);
 advance.addEventListener("click", () => {
@@ -458,13 +477,17 @@ toggle.addEventListener("click", () => {
 document.addEventListener("keydown", event => {
   if (event.code !== "Space" || event.defaultPrevented || event.isComposing ||
       event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
-  const shortcutButton = !metronomePage.hidden ? metronomeToggle : !practicePage.hidden ? toggle : null;
-  if (!shortcutButton) return;
+  const inDrill = !practicePage.hidden;
+  if (!inDrill && metronomePage.hidden) return;
   const target = event.target;
-  if (target instanceof Element && target !== shortcutButton &&
-      (target.isContentEditable || target.closest("input, select, textarea, button, a, summary"))) return;
+  if (target instanceof Element && (target.isContentEditable ||
+      target.closest("input, select, textarea") ||
+      (!inDrill && target !== metronomeToggle && target.closest("button, a, summary")))) return;
   event.preventDefault();
-  if (!event.repeat) shortcutButton.click();
+  if (event.repeat) return;
+  if (!inDrill) metronomeToggle.click();
+  else if (timed || isPressed(speedrun) || !settings.disabled) toggle.click();
+  else if (!advance.hidden) advance.click();
 });
 updateInstruction();
 updateMode();
@@ -569,6 +592,7 @@ function openPage(page) {
   if (settings.disabled && (learn || metronome || nextTimed !== timed)) stop();
   if (!metronome) stopMetronome();
   timed = nextTimed;
+  updateInstruction();
   if (!settings.disabled) updateMode();
   stopLessonAudio();
   learnPage.hidden = !learn;
